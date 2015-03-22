@@ -3,33 +3,41 @@ package com.example.selfie;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.List;
+
 
 public class MainActivity extends Activity implements ICompat {
-    private Toolbar toolbar;
 
     private SelfieListFragment listFragment;
     private SelfieFullFragment fullFragment;
     private FragmentManager fragmentManager;
+    private List<SelfieModel> newList;
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setTitle("Title");
         fragmentManager = getFragmentManager();
 
         if (savedInstanceState == null) {
             listFragment = new SelfieListFragment();
             FragmentTransaction ft = fragmentManager.beginTransaction();
             ft.add(R.id.container, listFragment);
-            ft.addToBackStack(null);
             ft.commit();
         }
     }
@@ -45,6 +53,7 @@ public class MainActivity extends Activity implements ICompat {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_camera) {
+            dispatchTakePictureIntent();
             return true;
         }
 
@@ -55,7 +64,60 @@ public class MainActivity extends Activity implements ICompat {
     public void call(int item) {
         fullFragment = SelfieFullFragment.newInstance(item);
         FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.addToBackStack(null);
         ft.replace(R.id.container, fullFragment);
+
         ft.commit();
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //Uri imageUri = data.getData();
+            Uri tempUri = getImageUri(this, imageBitmap);
+            File finalFile = new File(getRealPathFromURI(tempUri));
+            listFragment.getAdapter().addItem(new SelfieModel("one", finalFile.getAbsolutePath()));
+            //new SelfieModel(imageBitmap.toString(), imageBitmap.get);
+            //mImageView.setImageBitmap(imageBitmap);
+        }
+
+    }
+
+    private void setArgs(File file) {
+        Bundle bundle = new Bundle();
+        bundle.putString("path", file.getAbsolutePath());
+        listFragment.setArguments(bundle);
+    }
+
+    private Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", "Description");
+        return Uri.parse(path);
+    }
+
+    private String getRealPathFromURI(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

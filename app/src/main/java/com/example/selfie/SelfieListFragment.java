@@ -40,9 +40,11 @@ public class SelfieListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Bundle bundle = getArguments();
+        //String bitmapPath = bundle.getString("path");
         stubList = new ArrayList<>();
-        stubList.add(new SelfieModel("one", "path2"));
-        stubList.add(new SelfieModel("two", "path2"));
+        //stubList.add(new SelfieModel("one", "path2"));
+        //stubList.add(new SelfieModel("two", "path2"));
         adapter = new SelfieListAdapter(getActivity(), stubList);
     }
 
@@ -61,6 +63,10 @@ public class SelfieListFragment extends Fragment {
 
 
         return root;
+    }
+
+    public SelfieListAdapter getAdapter() {
+        return adapter;
     }
 
 }
