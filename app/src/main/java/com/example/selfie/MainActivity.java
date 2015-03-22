@@ -114,17 +114,24 @@ public class MainActivity extends Activity implements ICompat {
             //Uri tempUri = getImageUri(this, imageBitmap);
             //File finalFile = new File(getRealPathFromURI(tempUri));
             listFragment.getAdapter().addItem(new SelfieModel(mCurrentPhotoPath, mCurrentPhotoPath));
+            getAllFiles();
             //new SelfieModel(imageBitmap.toString(), imageBitmap.get);
             //mImageView.setImageBitmap(imageBitmap);
         }
 
     }
 
-    private void setArgs(File file) {
-        Bundle bundle = new Bundle();
-        bundle.putString("path", file.getAbsolutePath());
-        listFragment.setArguments(bundle);
+    private void getAllFiles(){
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File [] allFiles = dir.listFiles();
+        for(File file : allFiles) {
+            if (file.getName().contains("SELF")){
+                Log.d(TAG, "FOUND: " + file.getName());
+                listFragment.getAdapter().addItem(new SelfieModel(file.getName(), file.getAbsolutePath()));
+            }
+        }
     }
+
 
     private Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();

@@ -87,10 +87,6 @@ public class SelfieListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-
-
-
-
     public static Bitmap decodeBitmap(String path, int reqWidth, int reqHeight) {
         File image = new File(path);
 
