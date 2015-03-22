@@ -9,16 +9,23 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
 public class MainActivity extends Activity implements ICompat {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private SelfieListFragment listFragment;
     private SelfieFullFragment fullFragment;
@@ -73,19 +80,40 @@ public class MainActivity extends Activity implements ICompat {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ioe){
+                Log.d(TAG, ioe.getMessage());
+            }
+            if(photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                takePictureIntent.putExtra("data", photoFile.getAbsolutePath());
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
     }
+
+    String mCurrentPhotoPath;
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat ("yyMMdd_HHmm").format(new Date());
+        String imageFileName = "SELF_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return  image;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //Uri imageUri = data.getData();
-            Uri tempUri = getImageUri(this, imageBitmap);
-            File finalFile = new File(getRealPathFromURI(tempUri));
-            listFragment.getAdapter().addItem(new SelfieModel("one", finalFile.getAbsolutePath()));
+            //Bundle extras = data.getExtras();
+            //Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //Bitmap imageBitmap =
+            //Uri tempUri = getImageUri(this, imageBitmap);
+            //File finalFile = new File(getRealPathFromURI(tempUri));
+            listFragment.getAdapter().addItem(new SelfieModel(mCurrentPhotoPath, mCurrentPhotoPath));
             //new SelfieModel(imageBitmap.toString(), imageBitmap.get);
             //mImageView.setImageBitmap(imageBitmap);
         }

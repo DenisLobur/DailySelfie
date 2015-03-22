@@ -3,5 +3,5 @@
     <item android:id="@+id/action_camera"
           android:title="camera"
           android:showAsAction="ifRoom"
-          android:icon="@drawable/ic_launcher"/>
+          android:icon="@drawable/ic_camera"/>
 </menu>
