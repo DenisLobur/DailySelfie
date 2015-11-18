@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.example.selfie.model.mediator.webdata.Selfie;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +23,19 @@ import java.util.List;
 public class SelfieListAdapter extends BaseAdapter {
 
     private static final String TAG = SelfieListAdapter.class.getSimpleName();
-    Context context;
-    List<SelfieModel> items;
-    LayoutInflater inflater;
+    private Context context;
+    private List<Selfie> items;
+    private LayoutInflater inflater;
 
-    public SelfieListAdapter(Context context, List<SelfieModel> items) {
+    public SelfieListAdapter(Context context, List<Selfie> items) {
         this.context = context;
         this.items = items;
 
+        inflater = LayoutInflater.from(context);
+    }
+
+    public SelfieListAdapter(Context context) {
+        items = new ArrayList<Selfie>();
         inflater = LayoutInflater.from(context);
     }
 
@@ -37,18 +45,18 @@ public class SelfieListAdapter extends BaseAdapter {
     }
 
     @Override
-    public SelfieModel getItem(int position) {
+    public Selfie getItem(int position) {
         return items.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        SelfieModel singleItem = getItem(position);
+        Selfie singleItem = getItem(position);
         ViewHolder holder;
 
         if(convertView == null){
@@ -57,20 +65,57 @@ public class SelfieListAdapter extends BaseAdapter {
 
             holder.preview = (ImageView)convertView.findViewById(R.id.preview_img);
             holder.name = (TextView)convertView.findViewById(R.id.name_txt);
+            holder.checkbox = (CheckBox)convertView.findViewById(R.id.select_image);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder)convertView.getTag();
         }
 
-        holder.preview.setImageBitmap(decodeBitmap(singleItem.getPath(), 40, 40));
-        holder.name.setText(singleItem.getName());
+        byte [] outImage = singleItem.getPictureBlob();
+        ByteArrayInputStream imageStream = new ByteArrayInputStream(outImage);
+        Bitmap imageBm = BitmapFactory.decodeStream(imageStream);
+        //holder.preview.setImageBitmap(decodeBitmap(singleItem.getPath(), 40, 40));
+        holder.preview.setImageBitmap(imageBm);
+        holder.name.setText(singleItem.getTitle());
+        //holder.checkbox.setVisibility(visibility);
+        convertView.setBackground(context.getResources().getDrawable(getBackgrnd(position)));
 
         return convertView;
     }
 
-    public void swap(List<SelfieModel> list){
+    private int getBackgrnd(int position){
+        int[] items = {
+                R.drawable.wood,
+                R.drawable.blum,
+                R.drawable.grey_flowers,
+                R.drawable.flowers,
+                R.drawable.field,
+                R.drawable.houses,
+                R.drawable.ocean};
+        if (position<=6) {
+            return items[position];
+        } else if (position <= 12){
+            int pos = Math.abs(6 - position);
+            return items[pos];
+        } else {
+            return items[0];
+        }
+    }
+
+    private int visibility;
+    public void setVisible(boolean visible) {
+        if (visible) {
+            visibility = View.VISIBLE;
+        } else {
+            visibility = View.GONE;
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void swap(List<Selfie> list) {
         if(list == null){
-            items = new ArrayList<SelfieModel>();
+            items = new ArrayList<>();
         } else {
             items = new ArrayList<>(list);
             notifyDataSetChanged();
@@ -80,9 +125,10 @@ public class SelfieListAdapter extends BaseAdapter {
     private static class ViewHolder{
         ImageView preview;
         TextView name;
+        CheckBox checkbox;
     }
 
-    public void addItem(SelfieModel model) {
+    public void addItem(Selfie model) {
         items.add(model);
         notifyDataSetChanged();
     }

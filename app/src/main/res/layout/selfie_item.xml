@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/item_background"
               android:layout_width="match_parent"
-              android:layout_height="50dp"
+              android:layout_height="75dp"
+              android:background="@android:color/white"
               android:orientation="horizontal">
+
+    <CheckBox
+            android:id="@+id/select_image"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:visibility="gone"/>
 
     <ImageView
             android:id="@+id/preview_img"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"/>
 
@@ -15,8 +25,12 @@
             android:id="@+id/name_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NAME"
-            android:layout_marginLeft="20dp"
+            android:text="NAMgagagahhE"
+            android:textColor="@android:color/white"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/fringes"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="5dp"
             android:layout_gravity="center_vertical"/>
-
-</LinearLayout>
+</RelativeLayout>

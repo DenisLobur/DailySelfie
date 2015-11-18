@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">selfie</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Daily Selfie</string>
+    <string name="action_logout">Logout</string>
+    <string name="content_authority">coursera.assignment3</string>
+    <string name="thumbnail_image">Thumbnail Image</string>
+    <string name="title_upload_video">Upload Video by </string>
+    <string name="download_video">Download</string>
+    <string name="watch_video">Watch</string>
+    <string name="title">Title:</string>
+    <string name="duration">Duration:</string>
+    <string name="content_type">Content Type:</string>
+    <string name="rating">Rating:</string>
+
+    <string name="userName">User name:</string>
+    <string name="password">Password:</string>
+    <string name="login">Login</string>
 
 </resources>

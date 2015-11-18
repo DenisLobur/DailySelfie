@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import com.example.selfie.model.mediator.webdata.Selfie;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class SelfieListFragment extends Fragment {
 
     private ListView listView;
     private SelfieListAdapter adapter;
-    private List<SelfieModel> stubList;
+    private List<Selfie> stubList;
 
     private ICompat callback;
 
@@ -31,7 +32,7 @@ public class SelfieListFragment extends Fragment {
         super.onAttach(activity);
 
         try {
-            callback = (MainActivity) activity;
+            //callback = (MainActivity) activity;
         } catch (ClassCastException cce) {
             Log.d(TAG, "activity " + activity.getClass().getSimpleName() + " must implement " + ICompat.class.getSimpleName());
         }
@@ -42,10 +43,10 @@ public class SelfieListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         //Bundle bundle = getArguments();
         //String bitmapPath = bundle.getString("path");
-        stubList = new ArrayList<>();
-        //stubList.add(new SelfieModel("one", "path2"));
-        //stubList.add(new SelfieModel("two", "path2"));
-        adapter = new SelfieListAdapter(getActivity(), stubList);
+        stubList = new ArrayList<Selfie>();
+        //stubList.add(new Selfie("one", "path2"));
+        //stubList.add(new Selfie("two", "path2"));
+        //adapter = new SelfieListAdapter(getActivity(), stubList);
     }
 
     @Override
